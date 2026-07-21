@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Check-In — Buku Tamu Digital</title>
+    <title>Check-In Tamu</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
@@ -25,7 +25,8 @@
             padding: 0 32px; height: 56px;
             display: flex; align-items: center; justify-content: space-between;
         }
-        .header-left { display: flex; flex-direction: column; }
+        .header-left { display: flex; align-items: center; gap: 16px; }
+        .header-titles { display: flex; flex-direction: column; }
         .header-brand { font-weight: 700; font-size: 0.95rem; color: #0f172a; }
         .header-sub   { font-size: 0.72rem; color: #94a3b8; }
         .mode-badge {
@@ -207,19 +208,98 @@
             cursor: pointer; transition: all 0.15s;
         }
         .btn-pause:hover { background: #e2e8f0; }
+
+        /* SIDEBAR (Offcanvas) */
+        .sidebar-overlay { position: fixed; inset: 0; background: rgba(15, 23, 42, 0.4); z-index: 40; opacity: 0; pointer-events: none; transition: opacity 0.2s; }
+        .sidebar-overlay.show { opacity: 1; pointer-events: auto; }
+        .sidebar { width: 250px; flex-shrink: 0; background: #fff; border-right: 1px solid #e2e8f0; display: flex; flex-direction: column; min-height: 100vh; position: fixed; left: 0; top: 0; bottom: 0; z-index: 50; transform: translateX(-100%); transition: transform 0.2s ease-in-out; }
+        .sidebar.open { transform: translateX(0); }
+        .sidebar-profile { padding: 24px 20px 20px; border-bottom: 1px solid #f1f5f9; position: relative; }
+        .sidebar-close { position: absolute; top: 16px; right: 16px; background: none; border: none; cursor: pointer; color: #94a3b8; padding: 4px; border-radius: 6px; transition: background 0.15s; }
+        .sidebar-close:hover { background: #f1f5f9; color: #0f172a; }
+        .profile-row { display: flex; align-items: center; gap: 12px; margin-bottom: 6px; }
+        .profile-avatar { width: 40px; height: 40px; border-radius: 50%; background: #0f172a; color: #fff; display: flex; align-items: center; justify-content: center; font-size: 0.875rem; font-weight: 700; flex-shrink: 0; }
+        .profile-name { font-weight: 700; font-size: 0.875rem; color: #0f172a; }
+        .profile-role { font-size: 0.75rem; color: #94a3b8; }
+        .online-dot { display: flex; align-items: center; gap: 5px; font-size: 0.72rem; color: #059669; font-weight: 500; margin-top: 4px; }
+        .online-dot::before { content: ''; width: 7px; height: 7px; border-radius: 50%; background: #10b981; display: inline-block; }
+        .sidebar-nav { flex: 1; padding: 16px 12px; }
+        .nav-item { display: flex; align-items: center; gap: 10px; padding: 10px 12px; border-radius: 8px; margin-bottom: 2px; font-size: 0.875rem; font-weight: 500; color: #64748b; text-decoration: none; transition: all 0.15s; cursor: pointer; }
+        .nav-item:hover { background: #f8fafc; color: #0f172a; }
+        .nav-item.active { background: #16a34a; color: #fff; font-weight: 600; }
+        .nav-item.active .nav-icon { color: #fff; }
+        .nav-icon { font-size: 16px; width: 20px; text-align: center; }
+        .sidebar-footer { padding: 16px 12px; border-top: 1px solid #f1f5f9; }
+
+        .menu-btn { font-size: 18px; cursor: pointer; color: #64748b; background: none; border: none; display: flex; align-items: center; }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            header { padding: 0 16px; height: auto; min-height: 56px; flex-wrap: wrap; gap: 10px; padding-top: 10px; padding-bottom: 10px; }
+            main { padding: 16px 12px; }
+            .scanner-card { flex-direction: column; border-radius: 12px; }
+            .camera-side { min-height: 280px; }
+            .status-side { width: 100%; border-left: none; border-top: 1px solid #e2e8f0; padding: 24px 16px; }
+            .status-icon { font-size: 2.5rem; margin-bottom: 12px; }
+            .status-title { font-size: 1rem; }
+            .mode-badge { font-size: 0.7rem; padding: 4px 10px; }
+        }
     </style>
 </head>
 <body>
 
+<!-- SIDEBAR OVERLAY & CONTAINER -->
+<div class="sidebar-overlay" id="sidebar-overlay"></div>
+<aside class="sidebar" id="sidebar">
+    <div class="sidebar-profile">
+        <button class="sidebar-close" id="sidebar-close" title="Tutup Menu">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+        </button>
+        <div class="profile-row">
+            <div class="profile-avatar">{{ Auth::check() ? strtoupper(substr(Auth::user()->name, 0, 1)) : 'A' }}</div>
+            <div>
+                <div class="profile-name">{{ Auth::check() ? Auth::user()->name : 'Admin' }}</div>
+                <div class="profile-role">Administrator</div>
+            </div>
+        </div>
+        <div class="online-dot">Online</div>
+    </div>
+
+    <nav class="sidebar-nav">
+        <a href="{{ route('dashboard') }}" class="nav-item">
+            <span class="nav-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg></span> Dashboard
+        </a>
+        <a href="{{ route('tamu.register') }}" class="nav-item">
+            <span class="nav-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg></span> Daftar Tamu
+        </a>
+        <a href="{{ route('tamu.checkin') }}" class="nav-item active">
+            <span class="nav-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"/><polyline points="10 17 15 12 10 7"/><line x1="15" y1="12" x2="3" y2="12"/></svg></span> Check-In
+        </a>
+        <a href="{{ route('tamu.checkout') }}" class="nav-item">
+            <span class="nav-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg></span> Check-Out
+        </a>
+    </nav>
+
+    <div class="sidebar-footer">
+        <form method="POST" action="{{ route('logout') }}">
+            @csrf
+            <button type="submit" class="nav-item" style="width:100%; border:none; background:none; text-align:left; cursor:pointer; color:#ef4444;">
+                <span class="nav-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg></span> Logout
+            </button>
+        </form>
+    </div>
+</aside>
+
 <header>
     <div class="header-left">
-        <span class="header-brand">Buku Tamu Digital</span>
-        <span class="header-sub">Pusat Pendaftaran Wajah AI</span>
+        <button class="menu-btn" id="menu-btn">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+        </button>
+        <div class="header-titles">
+            <span class="header-brand">Face Recognition</span>
+        </div>
     </div>
-    <div class="mode-badge">
-        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"/><polyline points="10 17 15 12 10 7"/><line x1="15" y1="12" x2="3" y2="12"/></svg>
-        MODE CHECK-IN
-    </div>
+    
 </header>
 
 <main>
@@ -432,6 +512,21 @@
             resumeScanning();
         }
     });
+
+    // Sidebar Toggle Logic
+    const menuBtn = document.getElementById('menu-btn');
+    const sidebar = document.getElementById('sidebar');
+    const sidebarOverlay = document.getElementById('sidebar-overlay');
+    const sidebarClose = document.getElementById('sidebar-close');
+
+    function toggleSidebar() {
+        if(sidebar) sidebar.classList.toggle('open');
+        if(sidebarOverlay) sidebarOverlay.classList.toggle('show');
+    }
+
+    if(menuBtn) menuBtn.addEventListener('click', toggleSidebar);
+    if(sidebarOverlay) sidebarOverlay.addEventListener('click', toggleSidebar);
+    if(sidebarClose) sidebarClose.addEventListener('click', toggleSidebar);
 </script>
 </body>
 </html>

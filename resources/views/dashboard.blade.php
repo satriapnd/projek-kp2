@@ -18,12 +18,12 @@
 
         /* SIDEBAR */
         .sidebar {
-            width: 220px; flex-shrink: 0;
-            background: #fff; border-right: 1px solid #e2e8f0;
+            width: 250px; flex-shrink: 0; background: #fff; border-right: 1px solid #e2e8f0;
             display: flex; flex-direction: column;
             min-height: 100vh; position: fixed; left: 0; top: 0; bottom: 0;
-            z-index: 40;
+            z-index: 40; transform: translateX(-100%); transition: transform 0.2s ease-in-out; box-shadow: 4px 0 24px rgba(0,0,0,0.1);
         }
+        .sidebar.open { transform: translateX(0); }
         .sidebar-profile {
             padding: 24px 20px 20px;
             border-bottom: 1px solid #f1f5f9;
@@ -67,16 +67,22 @@
             padding: 16px 12px; border-top: 1px solid #f1f5f9;
         }
 
+        .sidebar-close { display: block; position: absolute; top: 16px; right: 16px; background: none; border: none; cursor: pointer; color: #94a3b8; padding: 4px; border-radius: 6px; transition: background 0.15s; }
+        .sidebar-close:hover { background: #f1f5f9; color: #0f172a; }
+
+        .sidebar-overlay { display: block; position: fixed; inset: 0; background: rgba(15, 23, 42, 0.4); z-index: 35; opacity: 0; pointer-events: none; transition: opacity 0.2s; }
+        .sidebar-overlay.show { opacity: 1; pointer-events: auto; }
+
         /* MAIN CONTENT */
-        .main-content {
-            margin-left: 220px; flex: 1; display: flex; flex-direction: column;
-        }
+        .main-content { margin-left: 0; flex: 1; display: flex; flex-direction: column; transition: margin-left 0.2s; }
         .topbar {
             background: #fff; border-bottom: 1px solid #e2e8f0;
             padding: 0 32px; height: 60px;
             display: flex; align-items: center; justify-content: space-between;
             position: sticky; top: 0; z-index: 30;
         }
+        .topbar-left { display: flex; align-items: center; gap: 16px; }
+        .menu-btn { display: flex; font-size: 18px; cursor: pointer; color: #64748b; background: none; border: none; align-items: center; }
         .topbar-title { font-weight: 700; font-size: 0.95rem; color: #0f172a; }
         .topbar-actions { display: flex; align-items: center; gap: 12px; }
         .notif-btn {
@@ -261,16 +267,33 @@
 
         /* Responsive */
         @media (max-width: 1024px) {
-            .sidebar { display: none; }
-            .main-content { margin-left: 0; }
+            .topbar { padding: 0 16px; }
+        }
+        @media (max-width: 768px) {
+            .page-header { flex-direction: column; align-items: flex-start; gap: 16px; }
+            .stats-grid { grid-template-columns: 1fr; }
+            .table-header { flex-direction: column; align-items: flex-start; gap: 12px; }
+            .table-actions { width: 100%; }
+            .table-actions form { flex-direction: column; width: 100%; }
+            .search-box { width: 100%; }
+            .search-box input { width: 100%; }
+            .btn-filter { width: 100%; }
+            .table-card { overflow-x: auto; }
+            th, td { white-space: nowrap; }
         }
     </style>
 </head>
 <body>
 
+<!-- SIDEBAR OVERLAY -->
+<div class="sidebar-overlay" id="sidebar-overlay"></div>
+
 <!-- SIDEBAR -->
-<aside class="sidebar">
+<aside class="sidebar" id="sidebar">
     <div class="sidebar-profile">
+        <button class="sidebar-close" id="sidebar-close" title="Tutup Menu">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+        </button>
         <div class="profile-row">
             <div class="profile-avatar">{{ strtoupper(substr(Auth::user()->name, 0, 1)) }}</div>
             <div>
@@ -309,7 +332,12 @@
 <!-- MAIN -->
 <div class="main-content">
     <div class="topbar">
-        <span class="topbar-title">Face Recognition</span>
+        <div class="topbar-left">
+            <button class="menu-btn" id="menu-btn">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+            </button>
+            <span class="topbar-title">Face Recognition</span>
+        </div>
         <div class="topbar-actions">
             <div class="notif-btn">
                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
@@ -364,7 +392,7 @@
             </div>
             <div class="stat-card">
                 <div class="stat-card-top">
-                    <span class="stat-label">Tamu Terdaftar AI</span>
+                    <span class="stat-label">Tamu Terdaftar</span>
                     <div class="stat-icon-box icon-purple">
                         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#7c3aed" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="3" width="20" height="14" rx="2"/><path d="M8 21h8"/><path d="M12 17v4"/><circle cx="8.5" cy="9" r="1.5"/><circle cx="15.5" cy="9" r="1.5"/><path d="M9 13h6"/></svg>
                     </div>
@@ -495,5 +523,21 @@
     </div>
 </div>
 
+<script>
+    // Sidebar Toggle Logic
+    const menuBtn = document.getElementById('menu-btn');
+    const sidebar = document.getElementById('sidebar');
+    const sidebarOverlay = document.getElementById('sidebar-overlay');
+    const sidebarClose = document.getElementById('sidebar-close');
+
+    function toggleSidebar() {
+        if(sidebar) sidebar.classList.toggle('open');
+        if(sidebarOverlay) sidebarOverlay.classList.toggle('show');
+    }
+
+    if(menuBtn) menuBtn.addEventListener('click', toggleSidebar);
+    if(sidebarOverlay) sidebarOverlay.addEventListener('click', toggleSidebar);
+    if(sidebarClose) sidebarClose.addEventListener('click', toggleSidebar);
+</script>
 </body>
 </html>

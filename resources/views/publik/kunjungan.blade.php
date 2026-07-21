@@ -165,6 +165,20 @@
 
         /* Footer */
         footer { text-align: center; padding: 32px; font-size: 0.8rem; color: #94a3b8; }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .nav-inner { flex-direction: column; gap: 12px; }
+            main { padding: 24px 16px; }
+            .header-content { flex-direction: column; align-items: flex-start; gap: 16px; }
+            .stats-grid { grid-template-columns: 1fr; gap: 12px; }
+            .table-header { flex-direction: column; align-items: flex-start; gap: 12px; }
+            .search-box { width: 100%; }
+            .search-box input { width: 100%; }
+            .table-card { overflow-x: auto; }
+            th, td { white-space: nowrap; }
+            .pagination-row { flex-direction: column; gap: 16px; }
+        }
     </style>
 </head>
 <body>
