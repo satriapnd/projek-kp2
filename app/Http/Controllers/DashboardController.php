@@ -29,7 +29,7 @@ class DashboardController extends Controller
         // Statistik
         $totalTamuTerdaftar = Tamu::count();
         $totalKunjunganHariIni = Kunjungan::whereDate('jam_masuk', today())->count();
-        $sedangBerkunjung = Kunjungan::where('status', 'sedang berkunjung')->count();
+        $sedangBerkunjung = Kunjungan::whereIn('status', ['sedang berkunjung', 'sedang_berkunjung'])->count();
 
         return view('dashboard', compact(
             'kunjungans', 

@@ -308,9 +308,6 @@
         <a href="{{ route('dashboard') }}" class="nav-item active">
             <span class="nav-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg></span> Dashboard
         </a>
-        <a href="{{ route('tamu.register') }}" class="nav-item">
-            <span class="nav-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg></span> Daftar Tamu
-        </a>
         <a href="{{ route('tamu.checkin') }}" class="nav-item">
             <span class="nav-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"/><polyline points="10 17 15 12 10 7"/><line x1="15" y1="12" x2="3" y2="12"/></svg></span> Check-In
         </a>
@@ -358,10 +355,6 @@
                 <h1>Ringkasan Hari Ini</h1>
                 <p class="page-subtitle">Pantau aktivitas tamu dan performa sistem AI secara real-time.</p>
             </div>
-            <a href="{{ route('tamu.register') }}" class="btn-primary">
-                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
-                Daftarkan Tamu
-            </a>
         </div>
 
         <!-- Stat Cards -->
@@ -429,7 +422,7 @@
                         <th>Profil</th>
                         <th>Keperluan</th>
                         <th>Waktu Masuk</th>
-                        <th>Status AI</th>
+                        <th>Akurasi</th>
                         <th>Status Kunjungan</th>
                         <th>Aksi</th>
                     </tr>
@@ -470,8 +463,8 @@
                             @endif
                         </td>
                         <td>
-                            @if($kunjungan->status == 'sedang berkunjung')
-                                <span class="status-badge status-active">Menunggu</span>
+                            @if(in_array(strtolower(trim($kunjungan->status ?? '')), ['sedang berkunjung', 'sedang_berkunjung', 'aktif']))
+                                <span class="status-badge status-active">Sedang Berkunjung</span>
                             @else
                                 <span class="status-badge status-done">Selesai</span>
                             @endif

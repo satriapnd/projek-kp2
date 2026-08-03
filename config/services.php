@@ -35,4 +35,21 @@ return [
         ],
     ],
 
+    /*
+    |--------------------------------------------------------------------------
+    | Flask Face Recognition Engine
+    |--------------------------------------------------------------------------
+    | URL dan API key untuk Python Flask server.
+    | Nilai diambil dari .env agar mudah diganti tanpa ubah kode.
+    |
+    | TODO: Setelah info server production dari pembimbing dikonfirmasi:
+    |   - Ganti FLASK_BASE_URL ke URL production (misal https://ai.domain.com)
+    |   - Pastikan FLASK_API_KEY di-rotate dan tidak sama dengan nilai development
+    */
+    'flask' => [
+        'base_url' => env('FLASK_BASE_URL', 'http://127.0.0.1:5050'),
+        'api_key'  => env('FLASK_API_KEY',  'dev-secret-key-ganti-nanti'),
+        'timeout'  => env('FLASK_TIMEOUT',  60),
+    ],
+
 ];

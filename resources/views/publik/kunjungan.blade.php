@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Kunjungan Hari Ini — Buku Tamu Digital</title>
+    <title>Kunjungan Hari Ini</title>
     <meta name="description" content="Pantau aktivitas tamu secara real-time. Sistem manajemen kunjungan berbasis Face Recognition AI.">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
@@ -37,14 +37,38 @@
             display: flex; align-items: center; justify-content: center;
             font-size: 16px;
         }
+        .nav-actions { display: flex; align-items: center; gap: 10px; }
+
+        /* Tombol tamu — hijau outline */
         .btn-login {
             display: flex; align-items: center; gap: 8px;
-            border: 1.5px solid #e2e8f0; border-radius: 8px;
-            padding: 8px 18px; font-size: 0.875rem; font-weight: 600;
-            color: #374151; background: #fff; text-decoration: none;
+            border: 1.5px solid #6ee7b7; border-radius: 8px;
+            padding: 8px 18px; font-size: 0.8rem; font-weight: 600;
+            color: #059669; background: #f0fdf4; text-decoration: none;
             transition: all 0.15s;
         }
-        .btn-login:hover { background: #f8fafc; border-color: #cbd5e1; }
+        .btn-login:hover { background: #dcfce7; border-color: #34d399; }
+
+        /* Tombol admin — slate gelap */
+        .btn-admin {
+            display: flex; align-items: center; gap: 8px;
+            border: 1.5px solid #334155; border-radius: 8px;
+            padding: 8px 18px; font-size: 0.8rem; font-weight: 600;
+            color: #f8fafc; background: #0f172a; text-decoration: none;
+            transition: all 0.15s;
+        }
+        .btn-admin:hover { background: #1e293b; border-color: #475569; }
+
+        /* Tombol daftar — hijau solid */
+        .btn-register {
+            display: flex; align-items: center; gap: 8px;
+            border: none; border-radius: 8px;
+            padding: 8px 18px; font-size: 0.8rem; font-weight: 700;
+            color: #fff; background: linear-gradient(135deg, #10b981, #059669);
+            text-decoration: none; transition: all 0.2s;
+            box-shadow: 0 2px 8px rgba(16,185,129,0.3);
+        }
+        .btn-register:hover { transform: translateY(-1px); box-shadow: 0 4px 14px rgba(16,185,129,0.4); }
 
         /* MAIN */
         main { max-width: 1100px; margin: 0 auto; padding: 48px 24px 80px; }
@@ -189,18 +213,50 @@
             <div class="nav-logo-icon">
                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#059669" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
             </div>
-            Buku Tamu Digital
+            Face Recognition
         </a>
-        <a href="{{ route('login') }}" class="btn-login">
-            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"/><polyline points="10 17 15 12 10 7"/><line x1="15" y1="12" x2="3" y2="12"/></svg>
-            Login Admin
-        </a>
+        <div class="nav-actions">
+            @if(session('tamu_id'))
+                {{-- Tamu sudah login --}}
+                <a href="{{ route('tamu.profil') }}" style="display:flex;align-items:center;gap:8px;text-decoration:none;color:#0f172a;font-weight:600;font-size:0.85rem;">
+                    <div style="width:30px;height:30px;border-radius:50%;background:#0f172a;color:#fff;display:flex;align-items:center;justify-content:center;font-size:0.72rem;font-weight:700;">
+                        {{ strtoupper(substr(session('tamu_nama', 'T'), 0, 1)) }}
+                    </div>
+                    {{ session('tamu_nama') }}
+                </a>
+                <a href="{{ route('tamu.profil') }}" class="btn-register" style="font-size:0.78rem;padding:7px 14px;">
+                    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+                    Profil Saya
+                </a>
+                <form method="POST" action="{{ route('tamu.logout.tamu') }}" style="display:inline;">
+                    @csrf
+                    <button type="submit" class="btn-login" style="border-color:#fca5a5;color:#dc2626;cursor:pointer;">
+                        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+                        Keluar
+                    </button>
+                </form>
+            @else
+                {{-- Guest --}}
+                <a href="{{ route('tamu.register') }}" class="btn-register">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><line x1="19" y1="8" x2="19" y2="14"/><line x1="22" y1="11" x2="16" y2="11"/></svg>
+                    Daftar Sekarang
+                </a>
+                <a href="{{ route('tamu.login') }}" class="btn-login">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+                    Masuk
+                </a>
+                <a href="{{ route('login') }}" class="btn-admin">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+                    Login Admin
+                </a>
+            @endif
+        </div>
     </div>
 </header>
 
 <main>
     <h1>Kunjungan Hari Ini</h1>
-    <p class="page-subtitle">Pantau aktivitas tamu secara real-time. Sistem ini menggunakan teknologi AI untuk pencatatan yang efisien dan akurat.</p>
+    <p class="page-subtitle">Pantau aktivitas tamu secara real-time. <br>Belum terdaftar? <a href="{{ route('tamu.register') }}" style="color:#059669;font-weight:600;text-decoration:none;">Daftar wajah Anda sekarang</a></p>
 
     <!-- Stat Cards -->
     <div class="stats-grid">
@@ -280,8 +336,8 @@
                         @endif
                     </td>
                     <td>
-                        @if($k->status == 'sedang berkunjung')
-                            <span class="status-badge status-active">● Menunggu</span>
+                        @if(in_array(strtolower(trim($k->status ?? '')), ['sedang berkunjung', 'sedang_berkunjung', 'aktif']))
+                            <span class="status-badge status-active">● Sedang Berkunjung</span>
                         @else
                             <span class="status-badge status-done">✓ Selesai</span>
                         @endif

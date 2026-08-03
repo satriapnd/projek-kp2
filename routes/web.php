@@ -4,6 +4,7 @@ use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\TamuController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\PublikController;
+use App\Http\Controllers\FaceController;
 use Illuminate\Support\Facades\Route;
 
 // ===================================
@@ -11,6 +12,18 @@ use Illuminate\Support\Facades\Route;
 // ===================================
 // Halaman utama: Riwayat kunjungan hari ini (bisa dilihat semua orang)
 Route::get('/', [PublikController::class, 'kunjungan'])->name('home');
+
+// Registrasi tamu mandiri (publik — bisa dari mana saja tanpa login)
+Route::get('/daftar', [TamuController::class, 'register'])->name('tamu.register');
+Route::post('/daftar', [TamuController::class, 'store'])->name('tamu.store');
+
+// Login tamu (via face recognition, publik)
+Route::get('/masuk', [TamuController::class, 'loginPage'])->name('tamu.login');
+Route::post('/masuk', [TamuController::class, 'loginProcess'])->name('tamu.login.process');
+Route::post('/keluar-tamu', [TamuController::class, 'logoutTamu'])->name('tamu.logout.tamu');
+
+// Profil tamu (memerlukan session tamu)
+Route::get('/profil-saya', [TamuController::class, 'profil'])->name('tamu.profil');
 
 // ===================================
 // HALAMAN ADMIN (Wajib Login)
@@ -20,10 +33,6 @@ Route::middleware(['auth'])->group(function () {
     // Dashboard Admin
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
     Route::delete('/tamu/{id}', [DashboardController::class, 'deleteTamu'])->name('tamu.destroy');
-
-    // Registrasi Wajah Tamu (hanya admin)
-    Route::get('/tamu/register', [TamuController::class, 'register'])->name('tamu.register');
-    Route::post('/tamu/store', [TamuController::class, 'store'])->name('tamu.store');
 
     // Scanner Check-In (hanya admin)
     Route::get('/tamu/checkin', [TamuController::class, 'checkin'])->name('tamu.checkin');
@@ -42,6 +51,17 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
+
+    // ===================================
+    // FACE API PROXY (Laravel → Flask)
+    // Semua request frontend dikirim ke sini, bukan langsung ke Flask.
+    // API key Flask aman di sisi server.
+    // TODO: Tambahkan rate limiting jika sudah production
+    //   Route::middleware('throttle:60,1')->group(function () { ... })
+    // ===================================
+    Route::get('/face/demo',      [FaceController::class, 'demo'])->name('face.demo');
+    Route::post('/face/recognize', [FaceController::class, 'recognize'])->name('face.recognize');
+    Route::post('/face/register',  [FaceController::class, 'register'])->name('face.register');
 });
 
 require __DIR__.'/auth.php';

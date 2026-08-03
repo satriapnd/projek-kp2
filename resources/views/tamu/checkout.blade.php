@@ -258,9 +258,6 @@
         <a href="{{ route('dashboard') }}" class="nav-item">
             <span class="nav-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg></span> Dashboard
         </a>
-        <a href="{{ route('tamu.register') }}" class="nav-item">
-            <span class="nav-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg></span> Daftar Tamu
-        </a>
         <a href="{{ route('tamu.checkin') }}" class="nav-item">
             <span class="nav-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"/><polyline points="10 17 15 12 10 7"/><line x1="15" y1="12" x2="3" y2="12"/></svg></span> Check-In
         </a>
@@ -397,17 +394,24 @@
     }
 
     function showGreeting(nama, confidence) {
+        const idleState = document.getElementById('idle-state');
+        if (idleState) idleState.style.display = 'none';
         greetingName.textContent   = `Sampai jumpa, ${nama}!`;
         greetingAction.textContent = `Check-out berhasil • Confidence: ${confidence}%`;
         greetingCard.classList.add('visible');
     }
-    function hideGreeting() { greetingCard.classList.remove('visible'); }
+    function hideGreeting() {
+        greetingCard.classList.remove('visible');
+        const idleState = document.getElementById('idle-state');
+        if (idleState) idleState.style.display = 'block';
+    }
 
     function resumeScanning() {
         scanLine.style.display = '';
         activePill.innerHTML = '<div class="active-dot"></div> AKTIF • MEMINDAI';
         setStatus('Menunggu wajah...', '#374151');
         statusTitle.textContent = 'Menunggu Wajah...';
+        hideGreeting();
         isScanning = true;
         document.getElementById('toggle-icon').innerHTML = '<rect x="6" y="4" width="4" height="16"/><rect x="14" y="4" width="4" height="16"/>';
         document.getElementById('toggle-label').textContent = 'Jeda Scanner';
@@ -472,15 +476,34 @@
                 body: JSON.stringify({ tamu_id, confidence })
             });
             const result = await resp.json();
-            Swal.fire({
-                icon: 'success', title: `Sampai Jumpa, ${nama}!`,
-                text: result.message, timer: 2500, showConfirmButton: false
-            });
-            setStatus(result.message, '#dc2626');
-            setTimeout(() => { hideGreeting(); resumeScanning(); }, 4000);
+
+            if (result.success) {
+                setStatus('✓ Check-Out Berhasil!', '#dc2626');
+                await Swal.fire({
+                    title: '✅ Check-Out Berhasil!',
+                    html: `
+                        <div style="font-size: 1.1rem; margin-top: 8px; font-weight: 600; color: #0f172a;">Sampai jumpa kembali, <strong>${nama}</strong>!</div>
+                        <div style="color: #64748b; margin-top: 6px; font-size: 0.85rem;">Status kunjungan Anda telah diperbarui menjadi <strong style="color:#dc2626;">Selesai</strong>.</div>
+                    `,
+                    icon: 'success',
+                    confirmButtonColor: '#dc2626',
+                    confirmButtonText: 'Selesai',
+                    timer: 3000,
+                    timerProgressBar: true
+                });
+            } else {
+                await Swal.fire({
+                    icon: 'error',
+                    title: 'Gagal Check-Out',
+                    text: result.message || 'Data kunjungan tidak dapat diperbarui.',
+                    confirmButtonColor: '#dc2626'
+                });
+            }
+            setTimeout(() => { hideGreeting(); resumeScanning(); }, 500);
         } catch {
-            Swal.fire('Error', 'Gagal menyimpan data.', 'error');
-            hideGreeting(); resumeScanning();
+            Swal.fire('Error', 'Gagal menyimpan data check-out.', 'error');
+            hideGreeting();
+            resumeScanning();
         }
     }
 

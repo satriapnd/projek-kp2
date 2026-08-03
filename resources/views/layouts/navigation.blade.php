@@ -23,9 +23,6 @@
                     <x-nav-link :href="route('tamu.checkout')" :active="request()->routeIs('tamu.checkout')">
                         🚪 Check-Out
                     </x-nav-link>
-                    <x-nav-link :href="route('tamu.register')" :active="request()->routeIs('tamu.register')">
-                        ➕ Registrasi Tamu
-                    </x-nav-link>
                 </div>
             </div>
 
@@ -74,7 +71,6 @@
             <x-responsive-nav-link :href="route('dashboard')" :active="request()->routeIs('dashboard')">🏠 Dashboard</x-responsive-nav-link>
             <x-responsive-nav-link :href="route('tamu.checkin')" :active="request()->routeIs('tamu.checkin')">📥 Check-In</x-responsive-nav-link>
             <x-responsive-nav-link :href="route('tamu.checkout')" :active="request()->routeIs('tamu.checkout')">🚪 Check-Out</x-responsive-nav-link>
-            <x-responsive-nav-link :href="route('tamu.register')" :active="request()->routeIs('tamu.register')">➕ Registrasi Tamu</x-responsive-nav-link>
             <x-responsive-nav-link :href="route('home')">🌐 Halaman Publik</x-responsive-nav-link>
         </div>
         <div class="pt-4 pb-1 border-t border-gray-200">

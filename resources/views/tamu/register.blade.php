@@ -3,7 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Registrasi Wajah</title>
+    <title>Daftar Sebagai Tamu — Face Recognition</title>
+    <meta name="description" content="Daftarkan wajah Anda untuk bisa melakukan check-in di kantor. Cukup ambil foto selfie dan isi nama.">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
@@ -16,37 +17,54 @@
             min-height: 100vh;
         }
 
-        /* TOPBAR */
+        /* HEADER */
         header {
             background: #fff;
             border-bottom: 1px solid #e2e8f0;
-            padding: 0 32px; height: 56px;
+            position: sticky; top: 0; z-index: 50;
+        }
+        .nav-inner {
+            max-width: 1100px; margin: 0 auto;
             display: flex; align-items: center; justify-content: space-between;
+            padding: 0 24px; height: 60px;
         }
-        .header-left {
-            display: flex; align-items: center; gap: 16px;
+        .nav-logo {
+            display: flex; align-items: center; gap: 10px;
+            font-weight: 700; font-size: 1rem; color: #0f172a; text-decoration: none;
         }
-        .menu-btn {
-            font-size: 18px; cursor: pointer; color: #64748b; background: none;
-            border: none; display: flex; align-items: center;
-        }
-        .header-brand { font-weight: 700; font-size: 0.95rem; color: #0f172a; }
-        .header-avatar {
-            width: 34px; height: 34px; border-radius: 50%;
-            background: #0f172a; color: #fff;
+        .nav-logo-icon {
+            width: 32px; height: 32px; background: #ecfdf5;
+            border: 1.5px solid #6ee7b7; border-radius: 8px;
             display: flex; align-items: center; justify-content: center;
-            font-size: 0.8rem; font-weight: 700;
+            font-size: 16px;
         }
+        .nav-actions { display: flex; align-items: center; gap: 10px; }
+        .btn-outline {
+            display: flex; align-items: center; gap: 7px;
+            border: 1.5px solid #e2e8f0; border-radius: 8px;
+            padding: 7px 16px; font-size: 0.8rem; font-weight: 600;
+            color: #374151; background: #fff; text-decoration: none;
+            transition: all 0.15s;
+        }
+        .btn-outline:hover { background: #f8fafc; border-color: #cbd5e1; }
 
         /* PAGE */
-        main { max-width: 1000px; margin: 0 auto; padding: 40px 24px; }
-        h1 { font-size: 1.75rem; font-weight: 800; color: #0f172a; margin-bottom: 6px; }
-        .page-sub { color: #64748b; font-size: 0.875rem; margin-bottom: 32px; }
+        main { max-width: 1000px; margin: 0 auto; padding: 48px 24px 80px; }
+
+        .page-header { margin-bottom: 32px; }
+        .page-tag {
+            display: inline-flex; align-items: center; gap: 6px;
+            background: #ecfdf5; border: 1px solid #6ee7b7;
+            color: #059669; border-radius: 20px; padding: 4px 12px;
+            font-size: 0.75rem; font-weight: 600; margin-bottom: 14px;
+        }
+        h1 { font-size: 1.875rem; font-weight: 800; color: #0f172a; margin-bottom: 8px; }
+        .page-sub { color: #64748b; font-size: 0.9rem; line-height: 1.6; max-width: 540px; }
 
         /* MAIN CARD */
         .reg-card {
-            background: #fff; border: 1px solid #e2e8f0; border-radius: 16px;
-            overflow: hidden; display: flex;
+            background: #fff; border: 1px solid #e2e8f0; border-radius: 20px;
+            overflow: hidden; display: flex; box-shadow: 0 4px 24px rgba(0,0,0,0.05);
         }
         @media (max-width: 768px) { .reg-card { flex-direction: column; } }
 
@@ -79,12 +97,19 @@
         .camera-wrapper {
             flex: 1; position: relative; overflow: hidden;
             display: flex; align-items: center; justify-content: center;
-            background: #000;
+            background: #0f172a; min-height: 300px;
         }
         #camera-stream {
-            /* object-fit: contain agar tampilan = yang diambil AI */
-            width: 100%; height: 100%; object-fit: contain;
+            width: 100%; height: 100%; object-fit: cover;
             transform: scaleX(-1);
+        }
+        .face-guide {
+            position: absolute; top: 50%; left: 50%;
+            transform: translate(-50%, -50%);
+            width: 160px; height: 200px;
+            border: 2px dashed rgba(16,185,129,0.6);
+            border-radius: 50%;
+            pointer-events: none;
         }
 
         .camera-bottombar {
@@ -93,188 +118,133 @@
             border-top: 1px solid #e2e8f0; gap: 12px;
         }
         .capture-btn {
-            width: 48px; height: 48px; border-radius: 50%;
-            background: #10b981; border: none; cursor: pointer;
+            width: 56px; height: 56px; border-radius: 50%;
+            background: #10b981; border: 4px solid #d1fae5; cursor: pointer;
             display: flex; align-items: center; justify-content: center;
-            font-size: 20px; transition: background 0.15s; color: #fff;
-            box-shadow: 0 4px 12px rgba(16,185,129,0.3);
+            font-size: 22px; transition: all 0.15s; color: #fff;
+            box-shadow: 0 4px 16px rgba(16,185,129,0.4);
         }
-        .capture-btn:hover { background: #059669; }
+        .capture-btn:hover { background: #059669; transform: scale(1.05); }
         .retake-btn {
             background: #f1f5f9; border: 1px solid #e2e8f0;
-            border-radius: 8px; padding: 7px 14px;
+            border-radius: 8px; padding: 8px 16px;
             font-size: 0.78rem; font-weight: 600; color: #374151;
             cursor: pointer; display: none; transition: all 0.15s;
+            font-family: 'Inter', sans-serif;
         }
         .retake-btn.visible { display: block; }
+        .retake-btn:hover { background: #e2e8f0; }
 
         /* RIGHT - Form */
         .form-side {
-            width: 340px; flex-shrink: 0; padding: 32px 28px;
+            width: 360px; flex-shrink: 0; padding: 36px 32px;
             border-left: 1px solid #e2e8f0;
         }
-        @media (max-width: 768px) { .form-side { width: 100%; border-left: none; border-top: 1px solid #e2e8f0; } }
+        @media (max-width: 768px) { .form-side { width: 100%; border-left: none; border-top: 1px solid #e2e8f0; padding: 24px 20px; } }
 
-        .form-section-title { font-weight: 700; font-size: 1rem; color: #0f172a; margin-bottom: 24px; }
+        .form-section-title { font-weight: 700; font-size: 1.05rem; color: #0f172a; margin-bottom: 6px; }
+        .form-section-sub { font-size: 0.8rem; color: #94a3b8; margin-bottom: 28px; line-height: 1.5; }
 
-        .form-group { margin-bottom: 18px; }
+        .form-group { margin-bottom: 20px; }
         label { display: block; font-size: 0.8rem; font-weight: 600; color: #374151; margin-bottom: 7px; }
         input[type="text"] {
-            width: 100%; border: 1px solid #e2e8f0; border-radius: 8px;
-            padding: 10px 14px; font-size: 0.875rem; color: #0f172a;
-            outline: none; transition: border-color 0.15s; font-family: 'Inter', sans-serif;
+            width: 100%; border: 1.5px solid #e2e8f0; border-radius: 10px;
+            padding: 11px 14px; font-size: 0.875rem; color: #0f172a;
+            outline: none; transition: all 0.15s; font-family: 'Inter', sans-serif;
         }
         input[type="text"]:focus { border-color: #10b981; box-shadow: 0 0 0 3px rgba(16,185,129,0.1); }
         input[type="text"]::placeholder { color: #94a3b8; }
 
-        /* Preview box */
+        /* Preview */
         .preview-box {
-            display: flex; align-items: center; gap: 12px;
-            background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 10px;
-            padding: 12px; margin-bottom: 24px;
+            display: flex; align-items: center; gap: 14px;
+            background: #f8fafc; border: 1.5px solid #e2e8f0; border-radius: 12px;
+            padding: 14px; margin-bottom: 28px;
         }
         .preview-avatar {
-            width: 52px; height: 52px; border-radius: 8px;
+            width: 56px; height: 56px; border-radius: 10px;
             background: #e2e8f0; display: flex; align-items: center; justify-content: center;
             flex-shrink: 0; overflow: hidden;
         }
-        .preview-avatar img {
-            width: 100%; height: 100%; object-fit: cover; transform: scaleX(-1);
+        .preview-avatar img { width: 100%; height: 100%; object-fit: cover; transform: scaleX(-1); }
+        .preview-text { font-size: 0.78rem; color: #64748b; line-height: 1.5; }
+        .preview-text strong { color: #059669; display: block; margin-bottom: 2px; }
+
+        /* Steps hint */
+        .steps { margin-bottom: 28px; }
+        .step { display: flex; align-items: flex-start; gap: 10px; margin-bottom: 10px; }
+        .step-num {
+            width: 22px; height: 22px; border-radius: 50%;
+            background: #0f172a; color: #fff;
+            font-size: 0.65rem; font-weight: 700;
+            display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+            margin-top: 1px;
         }
-        .preview-placeholder { color: #94a3b8; font-size: 22px; }
-        .preview-text { font-size: 0.8rem; color: #64748b; line-height: 1.5; }
+        .step-text { font-size: 0.78rem; color: #64748b; line-height: 1.5; }
 
         /* Buttons */
-        .btn-row { display: flex; gap: 10px; }
-        .btn-cancel {
-            flex: 1; padding: 11px; border-radius: 10px;
-            border: 1.5px solid #e2e8f0; background: #fff;
-            font-size: 0.875rem; font-weight: 600; color: #374151;
-            cursor: pointer; transition: all 0.15s; font-family: 'Inter', sans-serif;
-        }
-        .btn-cancel:hover { background: #f8fafc; }
         .btn-save {
-            flex: 1.5; padding: 11px; border-radius: 10px;
-            border: none; background: #16a34a; color: #fff;
-            font-size: 0.875rem; font-weight: 600; cursor: pointer;
-            display: flex; align-items: center; justify-content: center; gap: 7px;
-            transition: background 0.15s; font-family: 'Inter', sans-serif;
+            width: 100%; padding: 13px; border-radius: 12px;
+            border: none; background: linear-gradient(135deg, #10b981, #059669); color: #fff;
+            font-size: 0.9rem; font-weight: 700; cursor: pointer;
+            display: flex; align-items: center; justify-content: center; gap: 8px;
+            transition: all 0.2s; font-family: 'Inter', sans-serif;
+            box-shadow: 0 4px 12px rgba(16,185,129,0.3);
         }
-        .btn-save:hover { background: #15803d; }
-        .btn-save:disabled { background: #d1fae5; color: #6ee7b7; cursor: not-allowed; }
+        .btn-save:hover { transform: translateY(-1px); box-shadow: 0 6px 20px rgba(16,185,129,0.4); }
+        .btn-save:disabled { background: #d1fae5; color: #6ee7b7; cursor: not-allowed; box-shadow: none; transform: none; }
 
         canvas { display: none; }
 
-        /* SIDEBAR (Offcanvas) */
-        .sidebar-overlay {
-            position: fixed; inset: 0; background: rgba(15, 23, 42, 0.4);
-            z-index: 40; opacity: 0; pointer-events: none; transition: opacity 0.2s;
+        /* Success state */
+        .success-overlay {
+            display: none; flex-direction: column; align-items: center; justify-content: center;
+            padding: 48px 24px; text-align: center;
         }
-        .sidebar-overlay.show { opacity: 1; pointer-events: auto; }
-        
-        .sidebar {
-            width: 250px; flex-shrink: 0; background: #fff; border-right: 1px solid #e2e8f0;
-            display: flex; flex-direction: column;
-            min-height: 100vh; position: fixed; left: 0; top: 0; bottom: 0;
-            z-index: 50; transform: translateX(-100%); transition: transform 0.2s ease-in-out;
-        }
-        .sidebar.open { transform: translateX(0); }
-        .sidebar-profile { padding: 24px 20px 20px; border-bottom: 1px solid #f1f5f9; position: relative; }
-        .sidebar-close {
-            position: absolute; top: 16px; right: 16px;
-            background: none; border: none; cursor: pointer; color: #94a3b8;
-            padding: 4px; border-radius: 6px; transition: background 0.15s;
-        }
-        .sidebar-close:hover { background: #f1f5f9; color: #0f172a; }
-        .profile-row { display: flex; align-items: center; gap: 12px; margin-bottom: 6px; }
-        .profile-avatar {
-            width: 40px; height: 40px; border-radius: 50%; background: #0f172a; color: #fff;
-            display: flex; align-items: center; justify-content: center; font-size: 0.875rem; font-weight: 700; flex-shrink: 0;
-        }
-        .profile-name { font-weight: 700; font-size: 0.875rem; color: #0f172a; }
-        .profile-role { font-size: 0.75rem; color: #94a3b8; }
-        .online-dot { display: flex; align-items: center; gap: 5px; font-size: 0.72rem; color: #059669; font-weight: 500; margin-top: 4px; }
-        .online-dot::before { content: ''; width: 7px; height: 7px; border-radius: 50%; background: #10b981; display: inline-block; }
-        .sidebar-nav { flex: 1; padding: 16px 12px; }
-        .nav-item {
-            display: flex; align-items: center; gap: 10px; padding: 10px 12px; border-radius: 8px; margin-bottom: 2px;
-            font-size: 0.875rem; font-weight: 500; color: #64748b; text-decoration: none; transition: all 0.15s; cursor: pointer;
-        }
-        .nav-item:hover { background: #f8fafc; color: #0f172a; }
-        .nav-item.active { background: #16a34a; color: #fff; font-weight: 600; }
-        .nav-item.active .nav-icon { color: #fff; }
-        .nav-icon { font-size: 16px; width: 20px; text-align: center; }
-        .sidebar-footer { padding: 16px 12px; border-top: 1px solid #f1f5f9; }
+        .success-overlay.show { display: flex; }
+        .success-icon { font-size: 3rem; margin-bottom: 16px; }
+        .success-title { font-size: 1.25rem; font-weight: 800; color: #0f172a; margin-bottom: 8px; }
+        .success-sub { font-size: 0.875rem; color: #64748b; line-height: 1.6; }
 
-        /* Responsive */
         @media (max-width: 768px) {
-            header { padding: 0 16px; height: auto; min-height: 56px; }
-            main { padding: 24px 16px; }
+            header { padding: 0; }
+            main { padding: 24px 16px 60px; }
             h1 { font-size: 1.5rem; }
-            .page-sub { font-size: 0.8rem; margin-bottom: 24px; }
-            .reg-card { flex-direction: column; border-radius: 12px; }
-            .camera-side { min-height: 300px; }
-            .form-side { padding: 24px 16px; border-left: none; border-top: 1px solid #e2e8f0; }
         }
     </style>
 </head>
 <body>
 
-<!-- SIDEBAR OVERLAY & CONTAINER -->
-<div class="sidebar-overlay" id="sidebar-overlay"></div>
-<aside class="sidebar" id="sidebar">
-    <div class="sidebar-profile">
-        <button class="sidebar-close" id="sidebar-close" title="Tutup Menu">
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
-        </button>
-        <div class="profile-row">
-            <div class="profile-avatar">{{ strtoupper(substr(Auth::user()->name, 0, 1)) }}</div>
-            <div>
-                <div class="profile-name">{{ Auth::user()->name }}</div>
-                <div class="profile-role">Administrator</div>
-            </div>
-        </div>
-        <div class="online-dot">Online</div>
-    </div>
-
-    <nav class="sidebar-nav">
-        <a href="{{ route('dashboard') }}" class="nav-item">
-            <span class="nav-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg></span> Dashboard
-        </a>
-        <a href="{{ route('tamu.register') }}" class="nav-item active">
-            <span class="nav-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg></span> Daftar Tamu
-        </a>
-        <a href="{{ route('tamu.checkin') }}" class="nav-item">
-            <span class="nav-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"/><polyline points="10 17 15 12 10 7"/><line x1="15" y1="12" x2="3" y2="12"/></svg></span> Check-In
-        </a>
-        <a href="{{ route('tamu.checkout') }}" class="nav-item">
-            <span class="nav-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg></span> Check-Out
-        </a>
-    </nav>
-
-    <div class="sidebar-footer">
-        <form method="POST" action="{{ route('logout') }}">
-            @csrf
-            <button type="submit" class="nav-item" style="width:100%; border:none; background:none; text-align:left; cursor:pointer; color:#ef4444;">
-                <span class="nav-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg></span> Logout
-            </button>
-        </form>
-    </div>
-</aside>
-
 <header>
-    <div class="header-left">
-        <button class="menu-btn" id="menu-btn">
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
-        </button>
-        <span class="header-brand">Face Recognition</span>
+    <div class="nav-inner">
+        <a href="{{ route('home') }}" class="nav-logo">
+            <div class="nav-logo-icon">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#059669" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+            </div>
+            Face Recognition
+        </a>
+        <div class="nav-actions">
+            <a href="{{ route('home') }}" class="btn-outline">
+                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
+                Kembali
+            </a>
+            <a href="{{ route('login') }}" class="btn-outline">
+                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"/><polyline points="10 17 15 12 10 7"/><line x1="15" y1="12" x2="3" y2="12"/></svg>
+                Login Admin
+            </a>
+        </div>
     </div>
-    <div class="header-avatar">{{ strtoupper(substr(Auth::user()->name, 0, 1)) }}</div>
 </header>
 
 <main>
-    <h1>Registrasi Wajah</h1>
-    <p class="page-sub">Arahkan wajah Anda ke kamera, lalu tekan tombol kamera untuk mengambil foto. Pastikan wajah terlihat jelas.</p>
+    <div class="page-header">
+        <div class="page-tag">
+            <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+            Registrasi Tamu Mandiri
+        </div>
+        <h1>Daftar Sebagai Tamu</h1>
+        <p class="page-sub">Daftarkan wajah Anda dari mana saja — rumah, kantor, atau di perjalanan. Cukup izinkan kamera, ambil selfie, dan isi nama Anda.</p>
+    </div>
 
     <div class="reg-card">
 
@@ -283,57 +253,69 @@
             <div class="camera-topbar">
                 <div class="camera-label">
                     <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg>
-                    Kamera Aktif
+                    Kamera Selfie
                 </div>
                 <div class="detecting-badge" id="detecting-badge" style="display:none;">
                     <div class="detecting-dot"></div>
-                    Mendeteksi
+                    Kamera Aktif
                 </div>
             </div>
 
             <div class="camera-wrapper">
                 <video id="camera-stream" autoplay playsinline></video>
+                <div class="face-guide" id="face-guide" style="display:none;"></div>
                 <canvas id="canvas"></canvas>
-                <!-- Tidak ada face box — tampilan kamera = frame yang dikirim ke AI -->
             </div>
 
             <div class="camera-bottombar">
-                <button class="capture-btn" id="capture-btn" title="Ambil Foto">
-                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg>
+                <button class="capture-btn" id="capture-btn" title="Ambil Foto Selfie">
+                    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg>
                 </button>
-                <button class="retake-btn" id="retake-btn">Mulai Ulang</button>
+                <button class="retake-btn" id="retake-btn">🔄 Foto Ulang</button>
             </div>
         </div>
 
         <!-- Form Side -->
         <div class="form-side">
-            <div class="form-section-title">Data Profil</div>
+            <div class="form-section-title">Data Diri Anda</div>
+            <p class="form-section-sub">Informasi ini akan digunakan untuk identifikasi saat Anda check-in di kantor.</p>
 
-            <div class="form-group">
-                <label for="nama">Nama Lengkap</label>
-                <input type="text" id="nama" placeholder="Masukkan nama lengkap">
-            </div>
-
-            <div class="form-group">
-                <label>Preview Foto</label>
-                <div class="preview-box">
-                    <div class="preview-avatar" id="preview-avatar">
-                        <span class="preview-placeholder" id="preview-placeholder">
-                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#94a3b8" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
-                        </span>
-                        <img id="preview-img" style="display:none;" alt="Preview">
-                    </div>
-                    <span class="preview-text" id="preview-text">Pastikan wajah terlihat jelas dan tidak terhalang aksesori.</span>
+            <div class="steps">
+                <div class="step">
+                    <div class="step-num">1</div>
+                    <div class="step-text">Izinkan akses kamera di browser Anda</div>
+                </div>
+                <div class="step">
+                    <div class="step-num">2</div>
+                    <div class="step-text">Posisikan wajah di dalam panduan oval, lalu tekan tombol kamera</div>
+                </div>
+                <div class="step">
+                    <div class="step-num">3</div>
+                    <div class="step-text">Isi nama lengkap dan klik <strong>Daftar Sekarang</strong></div>
                 </div>
             </div>
 
-            <div class="btn-row">
-                <button class="btn-cancel" onclick="history.back()">Batal</button>
-                <button class="btn-save" id="submit-btn" disabled>
-                    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg>
-                    Simpan Data
-                </button>
+            <div class="form-group">
+                <label for="nama">Nama Lengkap</label>
+                <input type="text" id="nama" placeholder="Contoh: Budi Santoso" autocomplete="name">
             </div>
+
+            <div class="preview-box" id="preview-box">
+                <div class="preview-avatar" id="preview-avatar">
+                    <span id="preview-placeholder">
+                        <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#94a3b8" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+                    </span>
+                    <img id="preview-img" style="display:none;" alt="Preview foto">
+                </div>
+                <div class="preview-text" id="preview-text">
+                    Ambil foto selfie terlebih dahulu
+                </div>
+            </div>
+
+            <button class="btn-save" id="submit-btn" disabled>
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/><polyline points="16 11 18 13 22 9"/></svg>
+                Daftar Sekarang
+            </button>
         </div>
     </div>
 </main>
@@ -349,37 +331,47 @@
     const previewPlaceholder = document.getElementById('preview-placeholder');
     const previewText = document.getElementById('preview-text');
     const detectingBadge = document.getElementById('detecting-badge');
+    const faceGuide = document.getElementById('face-guide');
 
     let capturedImage = null;
 
     // Start camera
-    navigator.mediaDevices.getUserMedia({ video: { facingMode: 'user' } })
+    navigator.mediaDevices.getUserMedia({ video: { facingMode: 'user', width: { ideal: 640 }, height: { ideal: 480 } } })
         .then(stream => {
             video.srcObject = stream;
             detectingBadge.style.display = 'flex';
+            faceGuide.style.display = 'block';
         })
         .catch(err => {
-            Swal.fire('Error Kamera', 'Tidak dapat mengakses kamera. Pastikan izin kamera diberikan.', 'error');
+            Swal.fire({
+                icon: 'error',
+                title: 'Kamera Tidak Dapat Diakses',
+                html: 'Pastikan Anda memberi izin akses kamera di browser.<br><small style="color:#94a3b8">Error: ' + err.message + '</small>',
+                confirmButtonColor: '#10b981'
+            });
         });
 
-    // Camera ready — tidak ada face badge
-
-    // Capture — gunakan max 320px sama seperti versi lama agar AI tidak timeout
+    // Capture
     captureBtn.addEventListener('click', () => {
         const maxWidth = 320;
         const scale = Math.min(1, maxWidth / video.videoWidth);
         canvas.width  = video.videoWidth  * scale;
         canvas.height = video.videoHeight * scale;
-        canvas.getContext('2d').drawImage(video, 0, 0, canvas.width, canvas.height);
-        capturedImage = canvas.toDataURL('image/jpeg', 0.8);
+        const ctx = canvas.getContext('2d');
+        // Mirror flip untuk konsistensi dengan tampilan kamera
+        ctx.save();
+        ctx.scale(-1, 1);
+        ctx.drawImage(video, -canvas.width, 0, canvas.width, canvas.height);
+        ctx.restore();
+        capturedImage = canvas.toDataURL('image/jpeg', 0.85);
 
-        // Show preview
         previewPlaceholder.style.display = 'none';
         previewImg.src = capturedImage;
         previewImg.style.display = 'block';
-        previewText.textContent = 'Foto berhasil diambil. Isi nama lalu simpan.';
+        previewText.innerHTML = '<strong>✅ Foto berhasil diambil</strong>Isi nama lengkap Anda dan klik Daftar.';
 
         retakeBtn.classList.add('visible');
+        faceGuide.style.display = 'none';
         checkReady();
     });
 
@@ -388,8 +380,9 @@
         capturedImage = null;
         previewPlaceholder.style.display = 'flex';
         previewImg.style.display = 'none';
-        previewText.textContent = 'Pastikan wajah terlihat jelas dan tidak terhalang aksesori.';
+        previewText.innerHTML = 'Ambil foto selfie terlebih dahulu';
         retakeBtn.classList.remove('visible');
+        faceGuide.style.display = 'block';
         checkReady();
     });
 
@@ -402,45 +395,45 @@
     // Submit
     submitBtn.addEventListener('click', async () => {
         submitBtn.disabled = true;
-        submitBtn.innerHTML = '<span style="display:inline-block;width:14px;height:14px;border:2px solid #fff;border-top-color:transparent;border-radius:50%;animation:spin 0.8s linear infinite;"></span> Menyimpan...';
+        submitBtn.innerHTML = '<span style="display:inline-block;width:16px;height:16px;border:2.5px solid rgba(255,255,255,0.4);border-top-color:#fff;border-radius:50%;animation:spin 0.7s linear infinite;"></span> Mendaftarkan...';
 
         try {
             const resp = await fetch('{{ route("tamu.store") }}', {
                 method: 'POST',
-                headers: { 'Content-Type': 'application/json', 'X-CSRF-TOKEN': '{{ csrf_token() }}' },
-                body: JSON.stringify({ nama: namaInput.value, image: capturedImage })
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                },
+                body: JSON.stringify({ nama: namaInput.value.trim(), image: capturedImage })
             });
             const result = await resp.json();
 
             if (result.success) {
-                Swal.fire({ icon: 'success', title: 'Berhasil!', text: result.message, timer: 2000, showConfirmButton: false })
-                    .then(() => { window.location.reload(); });
+                await Swal.fire({
+                    icon: 'success',
+                    title: '🎉 Pendaftaran Berhasil!',
+                    html: `Hai, <strong>${namaInput.value}</strong>!<br>Wajah Anda sudah terdaftar di sistem.<br><br><small style="color:#64748b">Datang ke kantor dan lakukan check-in di scanner.</small>`,
+                    confirmButtonText: 'Kembali ke Beranda',
+                    confirmButtonColor: '#10b981',
+                    allowOutsideClick: false
+                });
+                window.location.href = '{{ route("home") }}';
             } else {
-                Swal.fire('Gagal', result.message, 'error');
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Pendaftaran Gagal',
+                    text: result.message,
+                    confirmButtonColor: '#10b981'
+                });
                 submitBtn.disabled = false;
-                submitBtn.innerHTML = '<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-2px"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg> Simpan Data';
+                submitBtn.innerHTML = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/><polyline points="16 11 18 13 22 9"/></svg> Daftar Sekarang';
             }
-        } catch {
-            Swal.fire('Error', 'Terjadi kesalahan sistem.', 'error');
+        } catch(e) {
+            Swal.fire({ icon: 'error', title: 'Error Sistem', text: 'Terjadi kesalahan. Coba lagi.', confirmButtonColor: '#10b981' });
             submitBtn.disabled = false;
-            submitBtn.innerHTML = '<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-2px"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg> Simpan Data';
+            submitBtn.innerHTML = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/><polyline points="16 11 18 13 22 9"/></svg> Daftar Sekarang';
         }
     });
-
-    // Sidebar Toggle Logic
-    const menuBtn = document.getElementById('menu-btn');
-    const sidebar = document.getElementById('sidebar');
-    const sidebarOverlay = document.getElementById('sidebar-overlay');
-    const sidebarClose = document.getElementById('sidebar-close');
-
-    function toggleSidebar() {
-        sidebar.classList.toggle('open');
-        sidebarOverlay.classList.toggle('show');
-    }
-
-    menuBtn.addEventListener('click', toggleSidebar);
-    sidebarOverlay.addEventListener('click', toggleSidebar);
-    sidebarClose.addEventListener('click', toggleSidebar);
 </script>
 <style>
     @keyframes spin { to { transform: rotate(360deg); } }

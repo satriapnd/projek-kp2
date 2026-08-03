@@ -25,3 +25,10 @@ _ide_helper.php
 Homestead.json
 Homestead.yaml
 Thumbs.db
+
+# Python engine — jangan commit file sensitif ini
+/python_engine/.env
+/python_engine/face_encodings.json
+/python_engine/venv/
+/python_engine/__pycache__/
+/python_engine/*.pyc
